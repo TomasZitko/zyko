@@ -7,7 +7,7 @@ import { ProviderError, type Block, type ChatMessage, type ChatProvider, type Ch
  * Assistant turns are replayed from the stored provider-native content when available so
  * thinking blocks are passed back unchanged.
  */
-function toWire(messages: ChatMessage[], model: string): Anthropic.MessageParam[] {
+export function toWire(messages: ChatMessage[], model: string): Anthropic.MessageParam[] {
   const out: Anthropic.MessageParam[] = [];
   for (const m of messages) {
     const raw = m.content.find((b) => b.type === "raw" && b.provider === "anthropic" && b.model === model) as Extract<Block, { type: "raw" }> | undefined;

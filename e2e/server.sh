@@ -7,6 +7,6 @@ export NODE_ENV=test LOG_LEVEL=warn PORT=4000 SITES_PORT=4100 APP_ORIGIN=http://
   SITES_DOMAIN=sites.localhost SITES_PUBLIC_PORT=:4100 DNS_MODE=fake WORKER_INLINE=true SERVE_WEB_DIST=apps/web/dist
 psql "$DATABASE_URL" -qc "drop schema if exists public cascade; drop schema if exists drizzle cascade; create schema public;"
 rm -rf .data/e2e-storage
-pnpm --filter @zyko/web build >/dev/null
+NODE_ENV=production pnpm --filter @zyko/web build >/dev/null
 # NODE_ENV=test keeps the dev-only in-process sites edge enabled.
 exec npx tsx apps/api/src/main.ts

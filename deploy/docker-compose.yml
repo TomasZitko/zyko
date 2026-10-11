@@ -1,0 +1,39 @@
+# Production-like staging stack. Fill in deploy/.env (see .env.example) before `docker compose up`.
+# Requires DNS: APP_HOST → this machine; *.SITES_DOMAIN → this machine; customers CNAME to <sub>.SITES_DOMAIN.
+services:
+  postgres:
+    image: postgres:16
+    environment: { POSTGRES_USER: zyko, POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}", POSTGRES_DB: zyko }
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U zyko"], interval: 5s, retries: 10 }
+  migrate:
+    build: { context: .., dockerfile: Dockerfile }
+    command: migrate
+    env_file: .env
+    depends_on: { postgres: { condition: service_healthy } }
+  api:
+    build: { context: .., dockerfile: Dockerfile }
+    command: api
+    env_file: .env
+    volumes: [storage:/data]
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    healthcheck: { test: ["CMD", "node", "-e", "fetch('http://localhost:4000/readyz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"], interval: 10s }
+  worker:
+    build: { context: .., dockerfile: Dockerfile }
+    command: worker
+    env_file: .env
+    volumes: [storage:/data]
+    depends_on: { migrate: { condition: service_completed_successfully } }
+  sites:
+    build: { context: .., dockerfile: Dockerfile }
+    command: sites
+    env_file: .env
+    volumes: [storage:/data]
+    depends_on: { migrate: { condition: service_completed_successfully } }
+  caddy:
+    image: caddy:2
+    ports: ["80:80", "443:443"]
+    environment: { APP_HOST: "${APP_HOST:?set APP_HOST}", SITES_DOMAIN: "${SITES_DOMAIN:?set SITES_DOMAIN}", ACME_EMAIL: "${ACME_EMAIL:?set ACME_EMAIL}" }
+    volumes: [./Caddyfile:/etc/caddy/Caddyfile:ro, caddy_data:/data]
+    depends_on: [api, sites]
+volumes: { pgdata: {}, storage: {}, caddy_data: {} }
