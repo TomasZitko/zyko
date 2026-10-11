@@ -1,0 +1,28 @@
+{
+  "name": "@zyko/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../../.env src/main.ts",
+    "start": "tsx src/main.ts",
+    "worker": "tsx src/worker-main.ts",
+    "sites": "tsx src/sites-main.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "@hono/node-server": "^1.19.0",
+    "@zyko/contracts": "workspace:*",
+    "@zyko/design-fixtures": "workspace:*",
+    "@zyko/module-fixtures": "workspace:*",
+    "@zyko/renderer": "workspace:*",
+    "drizzle-orm": "^0.45.0",
+    "hono": "^4.10.0",
+    "postgres": "^3.4.7",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": { "drizzle-kit": "^0.31.0" }
+}
