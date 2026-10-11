@@ -10,7 +10,8 @@
     "sites": "tsx src/sites-main.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "cli": "tsx src/cli.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",

@@ -64,7 +64,7 @@ await runUntilEmpty();
 results.publishMs = +(performance.now() - t).toFixed(1);
 clearSitesCache();
 const host = `${project.website.subdomain}.sites.test`;
-results.sitesGet = await time(300, () => sites.fetch(new Request(`http://${host}/`, { headers: { host } })).then((r) => r.arrayBuffer()));
+results.sitesGet = await time(300, async () => (await sites.fetch(new Request(`http://${host}/`, { headers: { host } }))).arrayBuffer());
 
 const dist = "apps/web/dist/assets";
 const gz = (f: string) => +(gzipSync(readFileSync(`${dist}/${f}`)).length / 1024).toFixed(1);
